@@ -2,18 +2,23 @@ package shooting
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
-	screenWidth  = 640
-	screenHeight = 480
+	screenWidth  = 1280
+	screenHeight = 768
 )
 
-type game struct{}
+type game struct {
+	backgroundImage *ebiten.Image
+	background      background
+}
 
 func NewGame() ebiten.Game {
-	return &game{}
+	return &game{
+		backgroundImage: ebiten.NewImage(screenWidth, screenHeight),
+		background:      background{},
+	}
 }
 
 func (g *game) Update() error {
@@ -21,7 +26,8 @@ func (g *game) Update() error {
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, World!")
+	g.background.Draw(g.backgroundImage)
+	screen.DrawImage(g.backgroundImage, nil)
 }
 
 func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
