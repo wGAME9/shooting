@@ -16,6 +16,8 @@ var (
 	curtainStraightImage *ebiten.Image
 	// 131x426
 	curtainImage *ebiten.Image
+
+	coinSpriteSheet *ebiten.Image
 )
 
 func init() {
@@ -37,6 +39,11 @@ func init() {
 	}
 
 	curtainImage, _, err = ebitenutil.NewImageFromFile("assets/curtain.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	coinSpriteSheet, _, err = ebitenutil.NewImageFromFile("assets/items_coin.png")
 	if err != nil {
 		log.Fatal(err)
 	}
