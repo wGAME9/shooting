@@ -1,17 +1,21 @@
 package shooting
 
 import (
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type background struct{}
+type background struct {
+	spriteSheet objectSpriteSheet
+}
 
 func (b background) Draw(backgroundImage *ebiten.Image, tick int) {
 	drawBackgroundGreen(backgroundImage)
+	drawDuckImage(backgroundImage, b.spriteSheet)
 	drawWater(backgroundImage, tick)
 	drawBackgroundWood(backgroundImage)
 	drawCurtain(backgroundImage)
-	// TODO: draw ducks
 	drawCurtainStraight(backgroundImage)
 }
 
@@ -91,4 +95,48 @@ func drawWater(backgroundImage *ebiten.Image, tick int) {
 		op.GeoM.Translate(float64(realX), float64(y))
 		backgroundImage.DrawImage(waterImage, op)
 	}
+}
+
+func drawDuckImage(backgroundImage *ebiten.Image, spriteSheet objectSpriteSheet) {
+	realDuckImage := getDuckImage(spriteSheet)
+
+	centerX, centerY := screenWidth/2, screenHeight/2
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(centerX), float64(centerY))
+	backgroundImage.DrawImage(realDuckImage, op)
+}
+
+func getDuckImage(spriteSheet objectSpriteSheet) *ebiten.Image {
+	duckImag, err := spriteSheet.GetImage("duck_outline_target_white.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	duckImageSize := duckImag.Bounds().Size()
+	duckWidth, duckHeight := duckImageSize.X, duckImageSize.Y
+
+	stickImage, err := spriteSheet.GetImage("stick_woodFixed_outline.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	stickImageSize := stickImage.Bounds().Size()
+	stickWidth, stickHeight := stickImageSize.X, stickImageSize.Y
+
+	squareWidth := duckWidth
+	if stickWidth > duckWidth {
+		squareWidth = stickWidth
+	}
+	squareHeight := duckHeight + stickHeight
+	square := ebiten.NewImage(squareWidth, squareHeight)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, 0)
+	square.DrawImage(duckImag, op)
+
+	stickStartingX := (squareWidth - stickWidth) / 2
+	op.GeoM.Reset()
+	op.GeoM.Translate(float64(stickStartingX), float64(duckHeight))
+	square.DrawImage(stickImage, op)
+
+	return square
 }

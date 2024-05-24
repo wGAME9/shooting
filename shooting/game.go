@@ -1,6 +1,9 @@
 package shooting
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -17,9 +20,16 @@ type game struct {
 }
 
 func NewGame() ebiten.Game {
+	var spriteSheet objectSpriteSheet
+	if err := json.Unmarshal(objectsSpriteSheetBytes, &spriteSheet); err != nil {
+		log.Fatal(err)
+	}
+
 	return &game{
 		backgroundImage: ebiten.NewImage(screenWidth, screenHeight),
-		background:      background{},
+		background: background{
+			spriteSheet: spriteSheet,
+		},
 	}
 }
 
