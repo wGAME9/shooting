@@ -12,7 +12,7 @@ type background struct {
 
 func (b background) Draw(backgroundImage *ebiten.Image, tick int) {
 	drawBackgroundGreen(backgroundImage)
-	drawDuckImage(backgroundImage, b.spriteSheet)
+	drawDuckImage(backgroundImage, b.spriteSheet, tick)
 	drawWater(backgroundImage, tick)
 	drawBackgroundWood(backgroundImage)
 	drawCurtain(backgroundImage)
@@ -97,13 +97,30 @@ func drawWater(backgroundImage *ebiten.Image, tick int) {
 	}
 }
 
-func drawDuckImage(backgroundImage *ebiten.Image, spriteSheet objectSpriteSheet) {
+var (
+	duckStartingX  = -114
+	duckStartingY  = screenHeight - 420
+	duckYDirection = 1
+)
+
+func drawDuckImage(backgroundImage *ebiten.Image, spriteSheet objectSpriteSheet, tick int) {
+	if duckStartingX == screenWidth {
+		return
+	}
+
 	realDuckImage := getDuckImage(spriteSheet)
 
-	centerX, centerY := screenWidth/2, screenHeight/2
+	if tick%2 == 0 {
+		duckStartingX += 2
+	}
+
+	if tick%60 == 0 {
+		duckYDirection *= -1
+	}
+	duckStartingY += duckYDirection
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(centerX), float64(centerY))
+	op.GeoM.Translate(float64(duckStartingX), float64(duckStartingY))
 	backgroundImage.DrawImage(realDuckImage, op)
 }
 
