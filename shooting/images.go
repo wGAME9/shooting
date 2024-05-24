@@ -59,11 +59,45 @@ func init() {
 	}
 }
 
+func getDuckImage(spriteSheet objectSpriteSheet) *ebiten.Image {
+	duckImag, err := spriteSheet.GetImage("duck_outline_target_white.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	duckImageSize := duckImag.Bounds().Size()
+	duckWidth, duckHeight := duckImageSize.X, duckImageSize.Y
+
+	stickImage, err := spriteSheet.GetImage("stick_woodFixed_outline.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	stickImageSize := stickImage.Bounds().Size()
+	stickWidth, stickHeight := stickImageSize.X, stickImageSize.Y
+
+	squareWidth := duckWidth
+	if stickWidth > duckWidth {
+		squareWidth = stickWidth
+	}
+	squareHeight := duckHeight + stickHeight
+	square := ebiten.NewImage(squareWidth, squareHeight)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, 0)
+	square.DrawImage(duckImag, op)
+
+	stickStartingX := (squareWidth - stickWidth) / 2
+	op.GeoM.Reset()
+	op.GeoM.Translate(float64(stickStartingX), float64(duckHeight))
+	square.DrawImage(stickImage, op)
+
+	return square
+}
+
 //go:embed objects.json
 var objectsSpriteSheetBytes []byte
 
 type objectSpriteSheet struct {
-	Images []object `json:"images"`
+	Images []spriteObject `json:"images"`
 }
 
 func (s objectSpriteSheet) GetImage(name string) (*ebiten.Image, error) {
@@ -81,7 +115,7 @@ func (s objectSpriteSheet) GetImage(name string) (*ebiten.Image, error) {
 	return nil, fmt.Errorf("image not found: [%s]", name)
 }
 
-type object struct {
+type spriteObject struct {
 	Name   string `json:"name"`
 	X      int    `json:"x"`
 	Y      int    `json:"y"`

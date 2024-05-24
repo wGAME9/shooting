@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/wGAME9/shooting/shooting/object"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -13,8 +15,9 @@ const (
 )
 
 type game struct {
-	backgroundImage *ebiten.Image
-	background      background
+	image *ebiten.Image
+
+	objects []object.Object
 
 	tick int
 }
@@ -26,21 +29,35 @@ func NewGame() ebiten.Game {
 	}
 
 	return &game{
-		backgroundImage: ebiten.NewImage(screenWidth, screenHeight),
-		background: background{
-			spriteSheet: spriteSheet,
+		image: ebiten.NewImage(screenWidth, screenHeight),
+		objects: []object.Object{
+			object.NewBackground(backgroundGreenImage),
+			object.NewCurtain(
+				curtainStraightImage,
+				curtainImage,
+			),
+			object.NewLevel(waterImage, getDuckImage(spriteSheet), 5),
+			object.NewDesk(backgroundWoodImage),
 		},
 	}
 }
 
 func (g *game) Update() error {
 	g.tick++
+	for _, obj := range g.objects {
+		if err := obj.Update(g.image, uint(g.tick)); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
-	g.background.Draw(g.backgroundImage, g.tick)
-	screen.DrawImage(g.backgroundImage, nil)
+	for _, obj := range g.objects {
+		obj.Draw(g.image)
+	}
+
+	screen.DrawImage(g.image, nil)
 }
 
 func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
