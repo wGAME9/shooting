@@ -36,6 +36,7 @@ func NewDuck(duckImage *ebiten.Image, initialY float64) Object {
 		startingX:  -float64(width),
 		startingY:  initialY,
 		yDirection: 1,
+		isOnScreen: true,
 	}
 }
 
