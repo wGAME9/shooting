@@ -25,7 +25,7 @@ type duck struct {
 	isOnScreen bool
 }
 
-func NewDuck(duckImage *ebiten.Image, initialY float64) Object {
+func newDuck(duckImage *ebiten.Image, initialY float64) *duck {
 	size := duckImage.Bounds().Size()
 	width, height := size.X, size.Y
 

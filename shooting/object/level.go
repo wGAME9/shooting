@@ -10,7 +10,7 @@ type level struct {
 	water Object
 
 	duckImage  *ebiten.Image
-	ducks      []Object
+	ducks      []*duck
 	maxOfDucks int
 }
 
@@ -22,7 +22,7 @@ func NewLevel(
 	return &level{
 		water:      NewWater(waterImage),
 		duckImage:  duckImage,
-		ducks:      make([]Object, 0, maxOfDucks),
+		ducks:      make([]*duck, 0, maxOfDucks),
 		maxOfDucks: maxOfDucks,
 	}
 }
@@ -39,7 +39,7 @@ func (l *level) Update(screen *ebiten.Image, tick uint) error {
 		// every second there's 40% possibilities to
 		// generate a missing duck
 		if tick%60 == 0 && rand.Float64() < 0.4 {
-			l.ducks = append(l.ducks, NewDuck(l.duckImage, float64(y)))
+			l.ducks = append(l.ducks, newDuck(l.duckImage, float64(y)))
 		}
 	}
 
