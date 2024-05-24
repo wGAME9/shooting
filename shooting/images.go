@@ -16,6 +16,8 @@ var (
 	curtainStraightImage *ebiten.Image
 	// 131x426
 	curtainImage *ebiten.Image
+	// 132x224
+	waterImage *ebiten.Image
 )
 
 func init() {
@@ -37,6 +39,11 @@ func init() {
 	}
 
 	curtainImage, _, err = ebitenutil.NewImageFromFile("assets/curtain.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	waterImage, _, err = ebitenutil.NewImageFromFile("assets/water1.png")
 	if err != nil {
 		log.Fatal(err)
 	}

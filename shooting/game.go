@@ -12,6 +12,8 @@ const (
 type game struct {
 	backgroundImage *ebiten.Image
 	background      background
+
+	tick int
 }
 
 func NewGame() ebiten.Game {
@@ -22,11 +24,12 @@ func NewGame() ebiten.Game {
 }
 
 func (g *game) Update() error {
+	g.tick++
 	return nil
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
-	g.background.Draw(g.backgroundImage)
+	g.background.Draw(g.backgroundImage, g.tick)
 	screen.DrawImage(g.backgroundImage, nil)
 }
 

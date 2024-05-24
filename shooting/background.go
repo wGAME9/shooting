@@ -6,10 +6,12 @@ import (
 
 type background struct{}
 
-func (b background) Draw(backgroundImage *ebiten.Image) {
+func (b background) Draw(backgroundImage *ebiten.Image, tick int) {
 	drawBackgroundGreen(backgroundImage)
+	drawWater(backgroundImage, tick)
 	drawBackgroundWood(backgroundImage)
 	drawCurtain(backgroundImage)
+	// TODO: draw ducks
 	drawCurtainStraight(backgroundImage)
 }
 
@@ -63,4 +65,30 @@ func drawCurtain(backgroundImage *ebiten.Image) {
 	op.GeoM.Scale(-1, 1) // Flip horizontally
 	op.GeoM.Translate(float64(screenWidth), 0)
 	backgroundImage.DrawImage(curtainImage, op)
+}
+
+var (
+	waterDirection int = 1
+	waterStartingX int = -132
+)
+
+func drawWater(backgroundImage *ebiten.Image, tick int) {
+	imageWidth := 132
+	imageHeight := 224
+	// draw 3 more to cover the screen
+	// since the water is moving
+	numI := screenWidth/imageWidth + 3
+	y := screenHeight - imageHeight
+
+	if int(tick)%60 == 0 {
+		waterDirection *= -1
+	}
+	waterStartingX += waterDirection
+
+	for i := range numI {
+		op := &ebiten.DrawImageOptions{}
+		realX := i*imageWidth + waterStartingX
+		op.GeoM.Translate(float64(realX), float64(y))
+		backgroundImage.DrawImage(waterImage, op)
+	}
 }
