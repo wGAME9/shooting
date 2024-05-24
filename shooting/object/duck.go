@@ -42,7 +42,7 @@ func NewDuck(duckImage *ebiten.Image, initialY float64) Object {
 
 func (d *duck) Update(screen *ebiten.Image, tick uint) error {
 	screenWidth := screen.Bounds().Size().X
-	if int(d.startingX) == screenWidth {
+	if int(d.startingX) >= screenWidth {
 		d.isOnScreen = false
 		return nil
 	}
