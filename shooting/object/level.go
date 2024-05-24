@@ -22,6 +22,7 @@ func NewLevel(
 	return &level{
 		water:      NewWater(waterImage),
 		duckImage:  duckImage,
+		ducks:      make([]Object, 0, maxOfDucks),
 		maxOfDucks: maxOfDucks,
 	}
 }
@@ -42,11 +43,19 @@ func (l *level) Update(screen *ebiten.Image, tick uint) error {
 		}
 	}
 
+	n := 0
 	for _, duck := range l.ducks {
 		if err := duck.Update(screen, tick); err != nil {
 			return err
 		}
+
+		if duck.IsOnScreen() {
+			l.ducks[n] = duck
+			n++
+		}
 	}
+
+	l.ducks = l.ducks[:n]
 
 	return nil
 }
