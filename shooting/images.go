@@ -1,6 +1,9 @@
 package shooting
 
 import (
+	_ "embed"
+	"fmt"
+	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -16,6 +19,10 @@ var (
 	curtainStraightImage *ebiten.Image
 	// 131x426
 	curtainImage *ebiten.Image
+	// 132x224
+	waterImage *ebiten.Image
+
+	objectsSpriteSheet *ebiten.Image
 )
 
 func init() {
@@ -40,4 +47,44 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	waterImage, _, err = ebitenutil.NewImageFromFile("assets/water1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	objectsSpriteSheet, _, err = ebitenutil.NewImageFromFile("assets/objects.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+//go:embed objects.json
+var objectsSpriteSheetBytes []byte
+
+type objectSpriteSheet struct {
+	Images []object `json:"images"`
+}
+
+func (s objectSpriteSheet) GetImage(name string) (*ebiten.Image, error) {
+	for _, object := range s.Images {
+		if object.Name == name {
+			x, y := object.X, object.Y
+			width, height := object.Width, object.Height
+
+			rect := image.Rect(x, y, x+width, y+height)
+
+			return objectsSpriteSheet.SubImage(rect).(*ebiten.Image), nil
+		}
+	}
+
+	return nil, fmt.Errorf("image not found: [%s]", name)
+}
+
+type object struct {
+	Name   string `json:"name"`
+	X      int    `json:"x"`
+	Y      int    `json:"y"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
 }
